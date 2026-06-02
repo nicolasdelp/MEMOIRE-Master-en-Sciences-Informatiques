@@ -1,0 +1,104 @@
+% ---------------------
+% INTRODUCTION
+% ---------------------
+\chapter{Introduction} \label{ch_one}
+
+L'optimisation de la performance sportive exige une quantification rigoureuse des paramètres posturaux~\cite{Colyer-2018}. Traditionnellement réservé aux environnements de laboratoire équipés de capteurs intrusifs~\cite{Colyer-2018}, l'évaluation biomécanique connaît une mutation fondamentale sous l'impulsion de la vision par ordinateur et de l'apprentissage profond (\textit{deep learning})~\cite{Human-Pose-Estimation-2021}. Ce mémoire étudie l'intégration de ces architectures, spécifiquement la segmentation sémantique \footnote{La segmentation sémantique (\textit{semantic segmentation}) désigne la tâche consistant à attribuer à chaque pixel d'une image une étiquette de classe (par exemple : personne, sol, équipement), produisant une partition de la scène en régions. Elle se distingue de la segmentation d'instances, qui différencie en outre les occurrences individuelles d'une même classe.}, la diffusion pour la complétion amodale \footnote{La complétion amodale (\textit{amodal completion}) désigne la capacité à reconstruire la forme complète d'un objet ou d'un sujet au-delà de sa seule partie visible, en inférant les régions masquées par une occlusion. Contrairement à l'\textit{inpainting classique} qui reconstruit le fond derrière un objet retiré, la complétion amodale cherche à restituer fidèlement la structure de l'objet ou du sujet partiellement caché, en s'appuyant sur les indices visuels disponibles et sur la connaissance apprise de la morphologie de l'objet ou du sujet.} et l'estimation de pose tridimensionnelle, appliquées à la force athlétique. L'intention première est la conception d'un pipeline d'analyse non invasif, capable d'extraire la pose d'un individu à partir de vidéos monoculaires non calibrés \footnote{Une vidéo monoculaire désigne une séquence captée par une unique caméra, par opposition aux systèmes stéréoscopiques ou multicaméras. Le qualificatif \emph{non calibrée} indique que les paramètres de la caméra (longueur focale, distorsion, centre optique) ne sont pas connus a priori, ce qui est le cas de la quasi-totalité des smartphones et caméras grand public.}. Ce premier chapitre définit le contexte, les enjeux, mais décrit aussi les défauts des méthodologies d'évaluation actuelles et structure les contributions technologiques développées au cours de ce mémoire.
+
+
+\section{Contexte et enjeux de l'analyse biomécanique en force athlétique} \label{one_one}
+
+La force athlétique est une discipline de compétition consistant en la réalisation de trois mouvements de base : la flexion de jambes (\textit{squat}), le développé couché (\textit{bench}) et le soulevé de terre (\textit{deadlift}).
+
+{\large \textbf{Flexion de jambes}}
+
+La flexion de jambes (figure~\ref{fig:squat}) est un mouvement au cours duquel l'athlète, barre chargée sur les épaules, doit descendre jusqu'à ce que la surface supérieure des cuisses passe en dessous du niveau des genoux, puis se relever jusqu'à la position droite. Le règlement technique de l'IPF (\textit{International Powerlifting Federation}) en donne la définition suivante :
+
+"La barre sera maintenue horizontalement sur les épaules, mains et doigts la serrant. [...] le force-athlétiste doit fléchir les genoux et abaisser son corps jusqu'à ce que la surface supérieure des cuisses à l'articulation de la hanche soit plus basse que le sommet des genoux. [...] Le force-athlétiste doit se relever à sa guise jusqu'à une position droite, genoux verrouillés." \cite[p.~18]{IPF-Technical-Regulations-2025}
+
+\begin{figure}
+  [htp]
+  \centering
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/1-Squat.jpg}
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/2-Squat.jpg}
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/3-Squat.jpg}
+  \caption{Illustration d'une flexion de jambes}
+  \label{fig:squat}
+\end{figure}
+
+{\large \textbf{Développé couché}}
+
+Le développé couché (figure~\ref{fig:bench}) consiste, depuis une position allongée sur un banc, à descendre une barre chargée jusqu'au contact de la poitrine puis à la repousser jusqu'à l'extension complète des bras. Le règlement technique de l'IPF en donne la définition suivante :
+
+"Le force-athlétiste doit s'allonger sur le dos de façon que sa tête, ses épaules et ses fessiers soient en contact avec la surface du banc [...]. Les pieds doivent être à plat sur le sol [...]. Ses mains et ses doigts doivent serrer la barre, [...] avec une prise pouces verrouillés. Cette position de corps doit être conservée pendant tout le mouvement. Les déplacements des pieds sont autorisés mais ils doivent rester sur le sol. [...] le force-athlétiste devra descendre la barre jusqu'au contact de la poitrine ou de la région abdominale et il doit avoir le dessous des articulations des coudes au-dessous ou au même niveau de la surface supérieure de l'articulation de leur épaule respective [...] le force-athlétiste doit ramener la barre au bout des bras tendus, en verrouillant les deux coudes." \cite[p.~18-19]{IPF-Technical-Regulations-2025} 
+
+\begin{figure}
+  [htp]
+  \centering
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/1-Bench.jpg}
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/2-Bench.jpg}
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/3-Bench.jpg}
+  \caption{Illustration d'un développé couché}
+  \label{fig:bench}
+\end{figure}
+
+{\large \textbf{Soulevé de terre}}
+
+Le soulevé de terre (figure~\ref{fig:deadlift}) consiste à soulever une barre chargée depuis le sol jusqu'à la position debout, genoux verrouillés et épaules en arrière. Le règlement technique de l'IPF en donne la définition suivante :
+
+"Le force-athlétiste fera face à l'avant du plateau, la barre posée horizontalement devant ses pieds. Il la saisira des deux mains en utilisant la prise qu'il désirera (en pronation, en supination, ou inversée, mains à l'extérieur des cuisses, ou à l'intérieur), et la soulèvera jusqu'à ce qu'il se redresse complètement. À la fin du soulevé, le force-athlétiste doit être droit, genoux verrouillés, et les épaules en arrière. [...] toute redescente de la barre avant que le force-athlétiste atteigne sa position finale sera sanctionnée." \cite[p.~25]{IPF-Technical-Regulations-2025} 
+
+\begin{figure}
+  [htp]
+  \centering
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/1-Deadlift.jpg}
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/2-Deadlift.jpg}
+  \includegraphics[width=3.5cm, height=5cm]{1-Introduction/3-Deadlift.jpg}
+  \caption{Illustration d'un soulevé de terre}
+  \label{fig:deadlift}
+\end{figure}
+
+{\large \textbf{Enjeux}}
+
+La performance dans ce sport dépend de la capacité de l'athlète à déplacer une charge maximale tout en respectant des trajectoires motrices optimales. L'analyse biomécanique \footnote{La biomécanique est la discipline scientifique qui applique les principes de la 
+mécanique (forces, moments, accélérations) à l'étude du mouvement du corps humain. En contexte sportif, elle permet de quantifier les contraintes articulaires, les leviers osseux et les trajectoires afin d'optimiser la technique et de prévenir les blessures.} joue donc un rôle fondamental pour trois raisons majeures :
+
+\begin{itemize}
+  \item \textbf{Optimisation de la performance} : L'étude des leviers articulaires et de la vitesse de barre permet d'identifier les points de rupture technique (\textit{sticking points}).
+
+  \item \textbf{Prévention des blessures} : Une détection précoce des asymétries ou des inclinaisons pelviennes non conformes est essentielle pour limiter les contraintes sur le rachis \footnote{Le rachis (ou colonne vertébrale), est la structure osseuse centrale du squelette. Il constitue le principal axe de transmission des charges mécaniques lors des exercices de force athlétique, notamment au squat et au soulevé de terre.}.
+
+  \item \textbf{Assistance à l'arbitrage} : En compétition, les juges évaluent la conformité de chaque mouvement aux critères techniques définis par le règlement de l'IPF\cite{IPF-Technical-Regulations-2025}, tels que la profondeur du squat ou le verrouillage des coudes au développé couché. Une reconstruction tridimensionnelle automatique offre une mesure objective et reproductible de ces critères, réduisant la part de subjectivité inhérente au jugement humain.
+\end{itemize}
+
+\section{Problématique : Limites des systèmes actuels} \label{one_two}
+
+L'analyse du mouvement en force athlétique repose traditionnellement sur l'observation visuelle par un expert ou sur l'usage de caméras standards. Les failles de ces méthodes peuvent être mises en évidence afin de justifier l'apport d'une nouvelle technologie. Les difficultés rencontrées par les systèmes classiques se jouent autour de trois axes majeurs :
+
+\begin{itemize}
+  \item \textbf{Perte d'information spatiale} : Une capture vidéo standard projette un mouvement tridimensionnel (\textit{3D}) sur un plan bidimensionnel (\textit{2D}), entraînant des erreurs de parallaxe \footnote{La parallaxe désigne le déplacement apparent d'un objet observé depuis deux points de vue différents. En vision monoculaire, ce phénomène se manifeste lorsqu'un segment corporel incliné selon l'axe de profondeur est projeté sur le plan image avec des proportions apparentes différentes de ses proportions réelles, induisant des erreurs systématiques dans l'estimation des angles articulaires.}~\cite{Hartley2003} et une incapacité à mesurer les rotations transversales \footnote{Les rotations transversales désignent les rotations s'effectuant autour de l'axe vertical du corps (axe longitudinal), telles que la rotation du bassin ou du torse dans le plan horizontal. En force athlétique, une rotation transversale asymétrique du bassin lors d'un squat constitue un indicateur précoce de déséquilibre musculaire ou de limitation de mobilité.} ou les inclinaisons latérales du buste, pourtant critiques lors d'un squat ou d'un soulevé de terre.
+  \item \textbf{Contraintes environnementales et occlusions} : Dans une salle de sport, la présence de disques, de racks à squat ou d'autres individus crée des occlusions partielles qui empêchent les algorithmes de détection de pose classiques de maintenir un suivi fluide et rigoureux~\cite{OpenPose-2019}.
+  \item \textbf{Limites des capteurs inertiels\footnote{Un capteur inertiel (\emph{Inertial Measurement Unit}, IMU) est un dispositif électronique mesurant les forces d'accélération et les vitesses angulaires via un accéléromètre et un gyroscope, auxquels s'ajoute parfois un magnétomètre pour estimer l'orientation absolue.}} : Bien qu'ils fournissent des données numériques, les capteurs portables sont intrusifs, nécessitent une calibration complexe avant chaque essai et peuvent bouger durant le mouvement, faussant ainsi les mesures de trajectoire~\cite{Roetenberg2009, Camomilla2018} (voir annexe~\ref{ann:imu-tests}).
+\end{itemize}
+
+Il est donc fondamental de proposer une méthode capable de reconstruire précisément la géométrie du corps en trois dimensions sans marqueurs physiques, afin de transformer une simple vidéo en un outil d'analyse précis. Une telle approche, ne nécessitant aucun équipement spécialisé au-delà d'une caméra standard, rend l'analyse biomécanique accessible aux athlètes amateurs et aux entraîneurs ne disposant pas d'un laboratoire de biomécanique.
+
+\section{Objectifs et contributions du travail} \label{one_three}
+
+L'objectif central de ce mémoire est de concevoir une méthode et des principes pour améliorer l'analyse technique en force athlétique grâce à l'intelligence artificielle (\textit{IA}). Pour répondre aux problématiques identifiées, une architecture logicielle reposant sur quatre piliers technologiques est proposée : la segmentation sémantique, l'estimation de profondeur monoculaire, la complétion amodale des occlusions et la reconstruction tridimensionnelle de la pose.
+
+L'apport personnel de ce travail réside dans l'individualisation du modèle de complétion amodale des occlusions ainsi qu'à l'unification de ces outils au sein d'un pipeline complet, permettant de passer d'une ressource vidéo brute à une représentation posturale en trois dimensions.
+
+\section{Organisation du mémoire} \label{one_four}
+
+Ce document structure la progression méthodologique et expérimentale de l'architecture développée. Il s'articule autour des chapitres suivants :
+
+\textbf{Chapitre 2 - État de l'art :} Synthétise les limites des méthodes de l'analyse biomécanique traditionnelles et les apports de l'intelligence artificielle, puis présente les modèles fondamentaux utilisés dans le pipeline : segmentation vidéo, estimation de profondeur monoculaire, complétion amodale des occlusions et estimation de pose 3D.
+
+\textbf{Chapitre 3 - Architecture du pipeline :} Détaille l'intégration des réseaux de neurones artificiels (SAM3, MoGe, TACO et SAM-3D Body) et justifie les choix techniques assurant la synchronisation du flux de données.
+
+\textbf{Chapitre 4 - Dataset et fine-tuning du modèle de diffusion :} Décrit la méthodologie de constitution du jeu de données, la stratégie d'annotation des occlusions, ainsi que les protocoles d'entraînement et d'évaluation du modèle de complétion amodale.
+
+\textbf{Chapitre 5 - Expérimentations et résultats :} Quantifie les performances du fine-tuning sur les trois mouvements de force athlétique via les métriques SSIM et LPIPS, évalue son impact sur la reconstruction 3D produite par SAM 3D Body via le MPJPE, et analyse le cas limite identifié sur le jeu de données de tests.
+
+\textbf{Chapitre 6 - Conclusion et perspectives :} Dresse le bilan objectif des contributions, décrit les limites matérielles et algorithmiques persistantes, et oriente les futurs axes de développement.

@@ -1,0 +1,255 @@
+\documentclass[a4paper,11pt,notitlepage]{report}
+
+\usepackage[utf8]{inputenc}
+\DeclareUnicodeCharacter{251C}{|--}
+\DeclareUnicodeCharacter{2502}{|}
+\DeclareUnicodeCharacter{2514}{`--}
+\DeclareUnicodeCharacter{2500}{-}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage[vmargin=2.6cm,hmargin=2.9cm]{geometry}
+\usepackage{indentfirst}
+\usepackage{cite}
+\usepackage[frenchb,french]{babel}
+\usepackage{eurosym}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{textcomp}
+\usepackage{hyperref}
+\usepackage{subcaption}
+\usepackage{pdfpages}
+\usepackage{qrcode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{float}
+
+\interfootnotelinepenalty=10000
+
+\lstdefinestyle{bash}{
+  language=bash,
+  backgroundcolor=\color{gray!10},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{black},
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{orange},
+  frame=single,
+  rulecolor=\color{gray!50},
+  breaklines=true,
+  showstringspaces=false,
+}
+
+\lstdefinestyle{tree}{
+  backgroundcolor=\color{gray!10},
+  basicstyle=\ttfamily\small,
+  frame=single,
+  rulecolor=\color{gray!50},
+  breaklines=false,
+  showstringspaces=false,
+}
+
+\setlength{\marginparwidth}{2cm}
+\raggedbottom
+
+\usepackage{todonotes}
+% \usepackage[disable]{todonotes}
+
+\usepackage{pslatex}
+
+\renewcommand{\labelitemi}{--}
+
+
+\graphicspath{ {images/} }
+
+\floatname{algorithm}{Algorithme}
+\renewcommand{\algorithmicrequire}{\textbf{Entrée:}}
+\renewcommand{\algorithmicensure}{\textbf{Sortie:}}
+\renewcommand{\algorithmicif}{\textbf{si}}
+\renewcommand{\algorithmicthen}{\textbf{alors}}
+\renewcommand{\algorithmicelse}{\textbf{sinon}}
+\renewcommand{\algorithmicfor}{\textbf{pour}}
+\renewcommand{\algorithmicend}{\textbf{fin}}
+\renewcommand{\algorithmicdo}{\textbf{faire}}
+
+
+\pagestyle{fancy}
+\fancyhf{} % vide en-têtes et pieds de page
+\fancyhead[L]{\nouppercase{\leftmark}} % titre du chapitre à gauche
+\fancyhead[R]{\thepage} % numéro de page à droite
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newcommand{\STitre}{UNIVERSITÉ DE MONS}
+\newcommand{\FTitre}{FACULTÉ DES SCIENCES}
+\newcommand{\Titre}{Reconstruction 3D des mouvements de force athlétique à partir de vidéos monoculaires.}
+
+
+\renewcommand{\O}{\mathcal{O}}
+\newtheorem{thm}{Théorème}
+\newtheorem{cor}{Corollaire}
+\newtheorem{conj}{Conjecture}
+\newtheorem{lem}{Lemme}
+\newtheorem{prop}{Proposition}
+\newtheorem{exa}{Exemple}
+\newtheorem{rem}{Remarque}
+\theoremstyle{definition}
+\newtheorem{defn}{Définition}
+
+
+\newenvironment{compar}{
+\begin{center}
+  \begin{quote}
+    \sf \small
+    \begin{tabular}{p{0.4\textwidth} | p{0.4\textwidth}}
+      }{
+    \end{tabular}
+  \end{quote}
+\end{center}
+\rm \normalsize
+}
+
+
+\def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip2em
+\hbox{}\nobreak\hfil(#1)%
+\parfillskip=0pt \finalhyphendemerits=0 \endgraf}}
+
+\newsavebox\mybox
+\newenvironment{aquote}[1]
+{\savebox\mybox{#1}
+\begin{quote}
+  }
+  {\signed{\usebox\mybox}
+\end{quote}
+}
+
+
+%\title{\LARGE\bf \Titre}
+
+
+\title{
+\begin{minipage}
+  \linewidth\centering 
+  \LARGE\bf\STitre
+  \vskip20pt 
+  \Large\bf\FTitre
+  \vskip20pt 
+  \Huge \Titre    
+\end{minipage}
+}
+
+\author{Nicolas DELPLANQUE\\[1.5ex]
+Master en Sciences Informatiques\\[1.5ex]
+{\tt \small nicolas.delplanque@student.umons.ac.be}
+}
+\date{Juin 2026}
+\begin{document}
+
+
+\maketitle
+\smallskip
+
+
+
+\markright{\Titre}
+
+
+\thispagestyle{empty}
+
+\bigskip
+
+%\renewcommand{\contentsname}{Contenu}
+
+\vfill
+
+\begin{quote}
+  {Mémoire présenté en vue de l'obtention du grade académique de {\bf Master en Sciences Informatiques}  \\ } 
+
+\end{quote}
+\begin{quote}
+  {\centering \bf Service : } Service d'Intelligence Artificielle \\
+  {\centering \bf Directeur : } Stéphane DUPONT \\
+  %%{\centering \bf Co-directeur : } Bruno QUOITIN
+\end{quote}
+
+\vfill
+
+\includegraphics[width=0.2\textwidth]{FS} \hspace{0.6\textwidth} \includegraphics[width=0.2\textwidth]{logo_UMONS} \hspace{0.2\textwidth} 
+
+\newpage
+\thispagestyle{empty}
+L'auteur, DELPLANQUE Nicolas, atteste avoir respecté les règles éthiques en vigueur, y compris la charte de l'Université relative à l'utilisation de l'Intelligence Artificielle. 
+
+% cfr. Règlement mémoires ...
+
+\newpage
+\thispagestyle{empty}
+
+\section*{Remerciements} \label{sec_rem}
+
+Je tiens à exprimer ma profonde gratitude envers toutes les personnes qui ont rendu ce travail possible.
+
+À mon directeur de mémoire, Stéphane Dupont, pour son accompagnement, ses conseils avisés et la confiance qu'il m'a accordée tout au long de ce travail.
+
+À mes parents, sans qui ce parcours n'aurait pas été possible. Leur soutien indéfectible et les nombreux sacrifices qu'ils ont consentis pour me permettre de poursuivre mes ambitions sont un cadeau dont je mesure aujourd'hui toute la valeur.
+
+À mon frère Alexandre, d'avoir pris le temps de relire ce travail avec attention. Tes retours m'ont été d'une grande aide.
+
+À ma copine Sarah, pour ta relecture soigneuse et, plus encore, pour ton soutien de chaque instant tout au long de ce parcours. Dans les moments de doute, lorsque l'envie d'abandonner se faisait sentir, tu as toujours su trouver les mots justes pour me redonner confiance et m'encourager à continuer. Tu as été un véritable pilier, et ce mémoire doit beaucoup à ta présence.
+
+À mon coach et ami Nello, qui m'accompagne depuis plus de trois ans dans la pratique de la force athlétique. C'est lui qui m'a fait découvrir ce sport exigeant et c'est cet engagement partagé qui a inspiré le sujet de ce mémoire.
+
+Enfin, je remercie l'ensemble des pratiquants volontaires qui ont accepté de partager leurs vidéos d'entraînement pour constituer le jeu de données, ainsi que tous mes proches pour leur soutien et leurs encouragements durant la réalisation de ce travail.
+
+% \newpage
+% \thispagestyle{empty}
+% \mbox{}
+% \newpage
+
+\newpage
+\tableofcontents
+\normalsize
+
+\newpage
+% \thispagestyle{empty}
+% \mbox{}
+% \newpage
+
+
+
+\setlength{\parindent}{12pt}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+\include{chapters/1-introduction}
+\include{chapters/2-state_of_the_art}
+\include{chapters/3-pipeline_architecture}
+\include{chapters/4-dataset_and_fine-tuning}
+\include{chapters/5-experiments_and_results}
+\include{chapters/6-conclusion}
+
+\addcontentsline{toc}{chapter}{Bibliographie}
+\bibliographystyle{unsrt}
+\bibliography{memoire}
+
+\newpage
+
+\appendix
+
+\include{chapters/annexes}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,130 @@
+% ---------------------
+% ETAT DE L'ART
+% ---------------------
+\chapter{État de l'art} \label{ch_two}
+
+L'analyse de la posture humaine par vision par ordinateur a connu un tournant avec la montée en popularité des réseaux de neurones profonds~\cite{Human-Pose-Estimation-2021}. Ce chapitre recense les avancées théoriques et les modèles architecturaux nécessaires à la compréhension du pipeline proposé pour la de reconstruction 3D, en partant des méthodes traditionnelles de l'analyse biomécanique en force athlétique jusqu'aux architectures d'apprentissage profond les plus récentes.
+
+\section{Analyse biomécanique en force athlétique} 
+
+L'analyse biomécanique en force athlétique s'effectue majoritairement par trois approches complémentaires. La première repose sur la vidéo standard, analysée manuellement pour évaluer la trajectoire de la barre ainsi que le mouvement de l'individu. Cette analyse peut être biaisée par l'angle de vue, ainsi que les conditions de capture (occlusions, éclairage, qualité vidéo). La deuxième utilise des transducteurs linéaires de position\footnote{Un transducteur linéaire de position (également appelé \emph{encoder} ou \emph{linear position transducer}) est un capteur mécanique-électrique composé d'un boîtier fixé à une structure rigide et d'un câble rétractable attaché à la barre. Le déplacement de la barre déroule le câble, dont la longueur est convertie en signal électrique via un potentiomètre ou un encodeur rotatif. La dérivée temporelle de ce signal fournit la vitesse instantanée de la barre, et sa dérivée seconde l'accélération, avec une précision typique inférieure au millimètre.} qui permettent de convertir un déplacement mécanique, via une corde fixée à la barre, en un signal électrique mesurable, permettant de calculer sa vitesse et son accélération avec une grande précision~\cite{MorenoVillanueva2021}. Ces appareils sont encombrants et relativement chers car ils sont la plupart du temps liés à une application mobile propriétaire. La troisième fait appel à des centrales inertielles (\textit{IMU}) placées sur la barre, fournissant des données d'orientation en temps réel mais au prix d'une calibration complexe~\cite{Abbott2020, Camomilla2018}.
+
+Au-delà de ces approches instrumentales, la capture de mouvement (\textit{motion capture} ou \textit{mocap}) offre une représentation plus complète du mouvement dans l'espace tridimensionnel.
+
+La capture de mouvement désigne l'ensemble des techniques permettant d'enregistrer le mouvement d'un corps dans l'espace et de le représenter sous forme de données numériques exploitables. On distingue deux grandes familles.
+
+\textbf{Les systèmes à marqueurs} (\textit{marker-based mocap}) constituent la référence en laboratoire~\cite{Colwell2025}. Ils s'appuient sur des capteurs placés sur les segments corporels, dont la position est triangulée par un réseau de caméras. Ces systèmes offrent une précision sous le millimétrique mais sont intrusifs, coûteux, et imposent un environnement contrôlé incompatible avec une salle de sport~\cite{Tibrewal2024}.
+
+\textbf{Les systèmes sans marqueurs} (\textit{markerless mocap}) estiment la pose  corporelle directement depuis les images, sans équipement sur le sujet. Portés par les avancées de l'apprentissage profond, ces systèmes connaissent un essor important. Des solutions comme OpenCap~\cite{Opencap-2026} ou Theia3D~\cite{Theia-3D-2026} permettent aujourd'hui d'obtenir des estimations cinématiques proches de la qualité avec marqueurs dans des conditions semi-contrôlées, à partir de plusieurs caméras synchronisées. Dans un contexte monoculaire, la tâche est plus difficile~\cite{Wade2022} : la perte d'information sur l'axe de profondeur introduit des ambiguïtés que les modèles paramétriques du corps humain (SMPL~\cite{SMPL-2015}, MHR~\cite{MHR-2025}) cherchent à lever en s'appuyant sur des données morphologiques apprises.
+
+L'application de la capture de mouvement tridimensionnelle sans marqueurs à la force athlétique reste cependant sous-exploitée. Plusieurs facteurs l'expliquent : l'environnement complexe des salles de compétition (éclairage, encombrement, présence de plusieurs personnes), les occlusions fréquentes générées par la barre et les disques. Les travaux appliquant la \textit{mocap markerless} se limitent à des environnements contrôlés avec plusieurs caméras synchronisées, rendant leur déploiement en conditions réelles difficile. C'est précisément ce problème qu'un pipeline opérant depuis une unique caméra monoculaire non calibrée, telle que celle développée dans ce mémoire, cherche à résoudre.
+
+\section{Limites des approches traditionnelles}
+
+Les méthodes d'analyse biomécanique présentées à la section précédente partagent des limitations structurelles qui restreignent leur déploiement en conditions réelles d'entraînement et de compétition.
+
+\subsection{Biais et subjectivité de l'analyse vidéo manuelle}
+
+L'analyse vidéo manuelle reste la méthode la plus répandue chez les entraîneurs~\cite{Colyer-2018}, mais elle souffre de plusieurs biais inhérents. La qualité de l'évaluation dépend directement de l'expertise de l'observateur et de l'angle de capture choisi. Une vue de face ne permet pas d'évaluer l'inclinaison du buste, une vue de côté masque les asymétries latérales. Par ailleurs, les occlusions générées par la barre et les disques obstruent précisément les régions articulaires les plus importantes (épaules, hanches et genoux), rendant toute évaluation visuelle partielle et potentiellement erronée.
+
+\subsection{Intrusivité des capteurs physiques}
+
+Les transducteurs linéaires de position et les centrales inertielles fournissent des données précises sur la vitesse de la barre, mais ne donne aucune information sur la posture corporelle de l'athlète. De plus, leur installation est chronophage et nécessite souvent une calibration, ce qui les rend peu pratiques pour une utilisation régulière en salle de sport ou en compétition. Leur coût élevé et leur nature intrusive limitent également leur adoption à grande échelle, en particulier dans les contextes amateurs ou semi-professionnels.
+
+\subsection{Contraintes des systèmes de capture de mouvement}
+
+Les systèmes \textit{marker-based} offrent la meilleure précision disponible, mais leur déploiement exige un environnement expérimental contrôlé : placement minutieux des marqueurs sur le sujet, calibration du réseau de caméras, absence d'occlusions entre marqueurs et caméras. Ces conditions sont incompatibles avec une salle de sport standard, où l'encombrement, l'éclairage variable et la présence de plusieurs personnes invalident les hypothèses de fonctionnement du système.
+
+Les systèmes \textit{markerless} lèvent la contrainte des marqueurs physiques mais requièrent à leur tour plusieurs caméras synchronisées et calibrées pour lever l'ambiguïté de profondeur. Des solutions comme OpenCap~\cite{Opencap-2026} ou Theia3D~\cite{Theia-3D-2026} restent ainsi dépendantes d'une infrastructure multi-caméras fixe, peu compatible avec les contraintes logistiques d'une compétition ou d'une salle d'entraînement commerciale.
+
+\subsection{Occlusions non gérées}
+
+Aucune des approches traditionnelles ne dispose de mécanisme pour gérer les occlusions générées par l'équipement de force athlétique. Or, lors d'un squat chargé, la barre et les disques masquent en permanence une portion significative du torse et des épaules de l'individu. Lors d'un développé couché, ils masquent une grande partie du tronc ainsi que les bras et les épaules. Ces occlusions constituent un cas d'échec systématique pour les algorithmes d'estimation de pose classiques, qui produisent des points articulaires (\textit{keypoints}) \footnote{Les \textit{keypoints} désignent les points caractéristiques du corps humain utilisés pour représenter la pose squelettique : articulations principales (épaules, coudes, poignets, hanches, genoux, chevilles) et extrémités (tête, mains, pieds). Leur localisation précise dans l'image constitue la sortie principale des modèles d'estimation de pose.} absents ou mal localisés (figure~\ref{fig:occlusion-example}) dès qu'une partie du corps disparaît du champ visuel, sans mécanisme de reconstruction des parties manquantes.
+
+\begin{figure}
+  [htp]
+  \centering
+  \includegraphics[width=12cm, height=5cm]{2-State_of_the_art/Example-occlusion.jpg}
+  \caption{Illustration d'une occlusion non gérée}
+  \label{fig:occlusion-example}
+\end{figure}
+
+\medskip
+
+L'ensemble de ces limitations justifie le recours à une approche fondée sur l'apprentissage profond et la vision par ordinateur, capable d'opérer depuis une unique caméra monoculaire non calibrée tout en gérant explicitement les occlusions propres à la force athlétique.
+
+
+\section{Apports de l'intelligence artificielle et de la vision par ordinateur}
+
+Face aux limitations identifiées à la section précédente, l'intelligence artificielle et la vision par ordinateur offrent de nouvelles perspectives dans les possibilités d'analyse biomécanique. Cette section présente et détaille ces perspectives.
+
+\subsection{Passage de la mesure instrumentale à l'inférence visuelle}
+
+L'apprentissage profond permet de substituer les capteurs physiques par des modèles capables d'inférer directement depuis le flux vidéo. Cette substitution élimine les contraintes d'intrusivité et de calibration associées aux IMU et aux transducteurs, tout en rendant l'analyse accessible depuis un équipement aussi courant qu'un smartphone ou une caméra.
+
+\subsection{Robustesse aux occlusions par les modèles génératifs}
+
+Les modèles de diffusion introduisent la capacité de reconstruire les régions corporelles masquées par l'équipement, là où les approches traditionnelles produisent des données manquantes ou erronées. Cette complétion amodale, rendue possible par la connaissance implicite de l'anatomie humaine acquise lors du pré-entraînement, permet de fournir aux modules d'estimation de pose une topologie corporelle complète, même en présence d'occlusions massives.
+
+\subsection{Reconstruction tridimensionnelle monoculaire}
+
+Les modèles paramétriques du corps humain (SMPL~\cite{SMPL-2015}, MHR~\cite{MHR-2025}), combinés aux architectures d'estimation de profondeur monoculaire, permettent de lever l'ambiguïté de profondeur sans recourir à plusieurs caméras synchronisées. La reconstruction 3D devient ainsi réalisable depuis une unique caméra non calibrée, dans des conditions d'éclairage et d'encombrement non contrôlées, ce qui constitue précisément le contexte des salles d'entraînement et des compétitions de force athlétique.
+
+\subsection{Généralisation sans annotation spécifique}
+
+Les architectures fondationnelles entraînées à très grande échelle (SAM~\cite{SAM-2023}, SAM 2~\cite{SAM2-2024}, SAM 3~\cite{SAM3-2025}) présentent des capacités de généralisation \textit{zero-shot} \footnote{L'inférence \textit{zero-shot} désigne la capacité d'un modèle à traiter des catégories ou des domaines non rencontrés lors de son entraînement, sans exemples supplémentaires ni réentraînement. Cette propriété, rendue possible par l'entraînement à très grande échelle sur des données hétérogènes, est déterminante dans des contextes applicatifs où les données annotées spécifiques au domaine sont rares ou inexistantes, comme c'est le cas pour la force athlétique.}. : elles produisent des résultats exploitables sur des domaines non vus lors de l'entraînement, sans nécessiter d'annotations spécifiques à la force athlétique. Cette propriété est déterminante dans un contexte où les données annotées de force athlétique sont quasi inexistantes dans les corpus publics.
+
+\section{Segmentation d'instances vidéo} 
+
+La segmentation d'instances vidéo (\textit{Video Instance Segmentation}, VIS) exige la détection, la délimitation spatiale et le suivi temporel d'entités spécifiques. Historiquement dominée par des modèles basés sur les réseaux de neurones convolutifs (\textit{Convolutional Neural Network}, CNN) (par exemple : Mask R-CNN~\cite{Mask-R-CNN-2018}), la discipline a muté vers les architectures fondationnelles. L'introduction du \textit{Segment Anything Model} (\textit{SAM})~\cite{SAM-2023} et de ses itérations intégrant la dimension temporelle (\textit{SAM 2}~\cite{SAM2-2024}, \textit{SAM 3}~\cite{SAM3-2025}) permet la génération de masques de haute fidélité zero-shot. Ces réseaux exploitent des transformeurs de vision \footnote{Les transformeurs de vision (\emph{Vision Transformers}, ViT) sont des architectures d'apprentissage profond qui appliquent le mécanisme d'attention (\emph{self-attention}) au traitement des images en découpant celles-ci en patches traités comme des séquences de tokens. Contrairement aux CNN, ils capturent des dépendances globales entre régions distantes de l'image dès les premières couches, ce qui les rend particulièrement robustes aux occlusions partielles.} et des mécanismes de mémoire spatio-temporelle \footnote{Un mécanisme de mémoire spatio-temporelle désigne une composante architecturale permettant au modèle de conserver et d'utiliser des représentations issues de trames précédentes lors du traitement d'une nouvelle trame.} pour maintenir l'identité de l'objet malgré les déformations dynamiques rapides. Dans l'analyse sportive, la segmentation garantit l'isolation de la géométrie de l'athlète des objets en premier ou en arrière-plan (figure~\ref{fig:segment-illustration}).
+
+\begin{figure}
+  [htp]
+  \centering
+  \includegraphics[width=3.5cm, height=5cm]{2-State_of_the_art/Squat.png}
+  \includegraphics[width=3.5cm, height=5cm]{2-State_of_the_art/Squat-SAM3.png}
+  \caption{Illustration de la segmentation}
+  \label{fig:segment-illustration}
+\end{figure}
+
+\section{Estimation monoculaire de profondeur} 
+
+L'estimation de profondeur monoculaire (\textit{Monocular Depth Estimation}, MDE) dérive une représentation tridimensionnelle à partir d'une matrice de pixels 2D. Les réseaux actuels, tels que Depth Anything (\textit{V1}~\cite{Depth-Anything-V1-2024} / \textit{V2}~\cite{Depth-Anything-V2-2024}) ou \textit{Monocular Geometry} (\textit{MoGe}~\cite{MoGe-2025} / \textit{MoGe2}~\cite{MoGe2-2025}), contournent le problème de la projection inverse \footnote{La projection inverse (\emph{inverse projection} ou \emph{back-projection}) désigne le problème consistant à retrouver les coordonnées tridimensionnelles d'un point de la scène à partir de sa projection bidimensionnelle sur le capteur.} en s'appuyant sur des informations apprises sur une vaste quantité de données hétérogènes. Ils extraient des cartes de profondeur denses, convertissant les intensités de pixels en valeurs métriques ou relatives (figure~\ref{fig:depth-estimation-illustration}). Cette construction spatiale est importante pour positionner correctement les segments corporels sur l'axe Z (profondeur) lors d'un mouvement capturé de face ou de trois-quarts.
+
+\begin{figure}
+  [htp]
+  \centering
+  \includegraphics[width=3.5cm, height=5cm]{2-State_of_the_art/Squat.png}
+  \includegraphics[width=3.5cm, height=5cm]{2-State_of_the_art/Squat-MoGe.png}
+  \caption{Illustration de l'estimation de profondeur}
+  \label{fig:depth-estimation-illustration}
+\end{figure}
+
+\section{Complétion amodale d'occlusions} 
+
+L'occlusion matérielle partielle empêche le suivi cinématique. La complétion amodale vidéo (\textit{Video Amodal Completion}) vise à compléter de manière cohérente les structures manquantes (figure~\ref{fig:inpainting-illustration}). Les modèles génératifs de diffusion\footnote{Un modèle génératif de diffusion (\emph{diffusion model}) est un modèle probabiliste (c'est-à-dire qui ne produit pas une sortie déterministe unique, mais modélise une distribution de probabilité sur les sorties possibles) qui apprend à générer des données en simulant un processus de débruitage itératif.}, spécifiquement des architectures comme TACO (\textit{Taming Diffusion for in-the-wild Video Amodal Completion})~\cite{TACO-2025}, permettent un débruitage itératif via les trames et les masques de segmentation préalablement extraits. Cette opération synthétise les pixels occlus (par exemple : par un rack ou par un disque de poids) en maintenant la continuité temporelle. Cette reconstruction préventive fournit au module d'estimation de pose 3D une topologie corporelle complète, diminuant les erreurs d'inférence.
+
+\begin{figure}
+  [htp]
+  \centering
+  \includegraphics[width=3.5cm, height=5cm]{2-State_of_the_art/Deadlift-occlusion.png}
+  \includegraphics[width=3.5cm, height=5cm]{2-State_of_the_art/Deadlift-lora.png}
+  \caption{Illustration de la complétion amodale d'occlusions}
+  \label{fig:inpainting-illustration}
+\end{figure}
+
+\section{Estimation de pose 2D et 3D} \label{sec:2d-3d-estimation}
+
+L'estimation de pose humaine (\textit{Human Pose Estimation}) consiste à localiser les points articulaires d'un individu. Deux grandes familles de méthodes se distinguent selon la dimensionnalité de la représentation produite : les approches bidimensionnelles, qui opèrent dans le plan image, et les approches tridimensionnelles, qui cherchent à restituer la géométrie complète du corps dans l'espace.
+
+\textbf{Les approches 2D} : Les architectures historiques comme HRNet (\textit{High-Resolution Net})~\cite{HRNet-2019} ou OpenPose~\cite{OpenPose-2019} constituent les fondations du domaine. OpenPose en particulier présente des limitations face aux occlusions~\cite{OpenPose-2019} : les keypoints occultés étant généralement absents des annotations d'entraînement, le modèle produit des faux négatifs et une précision de localisation dégradée dès qu'un membre disparaît du champ visuel~\cite{OpenPose-2019}. De plus, dans les scènes où plusieurs personnes se chevauchent, son mécanisme d'assemblage multi-personnes tend à fusionner les annotations de sujets distincts, produisant des squelettes anatomiquement incohérents~\cite{OpenPose-2019}. L'état de l'art actuel s'appuie sur les transformeurs de vision (par exemple : ViTPose~\cite{ViTPose-2022}, ViTPose++~\cite{ViTPose++-2024}) et les modèles unifiés temps réel \footnote{Les modèles unifiés temps réel désignent des architectures conçues pour effectuer simultanément la détection d'objets et l'estimation de pose en une seule passe réseau. Cette conception permet d'atteindre des fréquences d'inférence compatibles avec le traitement vidéo en direct, typiquement supérieures à 30 images par seconde.} (par exemple : YOLO-Pose~\cite{YOLO-Pose-2022}) afin accroître la robustesse de l'inférence. Bien qu'elles extraient des coordonnées bidimensionnelles avec une bonne précision face aux occlusions, ces méthodes demeurent intrinsèquement limitées par la perte d'information spatiale et les erreurs de parallaxe (par exemple : l'inclinaison du buste vers l'avant modifiant la projection visuelle des segments articulaires). Ces limitations sont particulièrement problématiques dans le contexte de la force athlétique, où la barre et les disques génèrent des occlusions massives et prolongées sur des régions articulaires clés, motivant le recours à un pipeline de complétion amodale en amont de l'estimation de pose.
+
+\textbf{Les approches 3D} : Le passage à la dimension supérieure s'effectue soit par levée d'ambiguïté directe depuis l'image (via des modèles de régression), soit par triangulation si plusieurs vues sont disponibles. Dans un contexte monoculaire, le défi de l'estimation de la profondeur relative \footnote{La profondeur relative désigne la distance d'un point de la scène par rapport à la caméra. En vision monoculaire, cette estimation est ambiguë car une infinité de scènes tridimensionnelles distinctes peuvent produire la même projection bidimensionnelle sur le capteur (ambiguïté de profondeur). Les modèles d'apprentissage profond cherchent à lever cette ambiguïté en s'appuyant sur des indices monoculaires appris : texture, perspective, taille relative des objets et relations spatiales entre segments corporels.} est résolu par l'intégration de modèles paramétriques du corps humain. Historiquement centrés sur le modèle SMPL (\textit{Skinned Multi-Person Linear model})~\cite{SMPL-2015} et ses évolutions expressives (SMPL-X~\cite{SMPL-X-2019}) sont aujourd'hui concurrencés par des architectures de nouvelle génération comme le MHR (\textit{Momentum Human Rig})~\cite{MHR-2025} de Meta. MHR redéfinit la modélisation paramétrique en séparant strictement le squelette et la forme. Cette structure découplée garantit une meilleure plausibilité biomécanique et une fidélité supérieure (figure~\ref{fig:pose-estimation-illustration}).
+
+\begin{figure}
+  [htp]
+  \centering
+  \includegraphics[width=12cm, height=5cm]{2-State_of_the_art/Squat-SMA3DBody.jpg}
+  \caption{Illustration de l'estimation de pose}
+  \label{fig:pose-estimation-illustration}
+\end{figure}

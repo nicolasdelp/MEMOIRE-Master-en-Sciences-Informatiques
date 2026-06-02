@@ -1,0 +1,47 @@
+{
+  "os":  "Linux-6.5.0-18-generic-x86_64-with-glibc2.35",
+  "python":  "CPython 3.10.20",
+  "startedAt":  "2026-05-07T06:10:31.259920Z",
+  "program":  "/media/pc/hdd2/data-students/nicolasdelplanque/TrackMyLift-AI/code/models/taco/test_wandb.py",
+  "codePath":  "code/models/taco/test_wandb.py",
+  "codePathLocal":  "test_wandb.py",
+  "git":  {
+    "remote":  "https://github.com/nicolasdelp/TrackMyLift-AI.git",
+    "commit":  "364c6e057c2a4fcbab3bc07505a41f7ec542b691"
+  },
+  "email":  "j8d9f6ftbb@privaterelay.appleid.com",
+  "root":  "/media/pc/hdd2/data-students/nicolasdelplanque/TrackMyLift-AI/code/models/taco",
+  "host":  "pc-ThinkStation-P620",
+  "executable":  "/home/nicolasdelplanque/miniconda3/envs/taco/bin/python",
+  "cpu_count":  24,
+  "cpu_count_logical":  48,
+  "gpu":  "NVIDIA RTX A5000",
+  "gpu_count":  2,
+  "disk":  {
+    "/":  {
+      "total":  "1006450962432",
+      "used":  "458087104512"
+    }
+  },
+  "memory":  {
+    "total":  "134865375232"
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA RTX A5000",
+      "memoryTotal":  "25757220864",
+      "cudaCores":  8192,
+      "architecture":  "Ampere",
+      "uuid":  "GPU-1ef3faa8-e755-6db3-f2be-68728639fc9a"
+    },
+    {
+      "name":  "NVIDIA RTX A5000",
+      "memoryTotal":  "25757220864",
+      "cudaCores":  8192,
+      "architecture":  "Ampere",
+      "uuid":  "GPU-e563dc8e-825d-53e6-0ecd-fe90303cb972"
+    }
+  ],
+  "cudaVersion":  "12.2",
+  "writerId":  "3ovkyurw68oksw5bqdcyqtkyuhcjsr5n"
+}

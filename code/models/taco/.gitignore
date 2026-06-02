@@ -1,0 +1,11 @@
+slurm*
+
+__pycache__
+*/__pycache__
+*/**/__pycache__
+
+examples/*
+wandb-lora/latest-run/files/media/*
+wandb-lora/latest-run/files/output.log
+wandb-lora/run-20260520_005150-2026-05-20T00-49-56_TrackMyLift-AI/files/media
+wandb-lora/run-20260520_005150-2026-05-20T00-49-56_TrackMyLift-AI/files/output.log

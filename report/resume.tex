@@ -1,0 +1,65 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{parskip}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+\begin{center}
+  {\large\textsc{Université de Mons} --- Faculté des Sciences}\\[0.3em]
+  {\normalsize Master en Sciences Informatiques --- Juin 2026}\\[1.2em]
+  {\Large\bfseries Reconstruction 3D des mouvements de force athlétique\\
+  à partir de vidéos monoculaires}\\[0.8em]
+  {\normalsize \textbf{Nicolas Delplanque} \quad --- \quad Directeur : Stéphane Dupont}
+\end{center}
+
+\vspace{1em}
+
+\noindent\textbf{Résumé.}
+L'analyse biomécanique de la force athlétique (flexion de jambes, développé couché, soulevé de
+terre) repose traditionnellement sur l'observation visuelle d'un expert ou sur des
+capteurs intrusifs, deux approches limitées par la perte d'information spatiale, les
+occlusions liées à l'équipement et le besoin de matériel spécialisé. Ce mémoire propose
+un pipeline non invasif capable de reconstruire la pose tridimensionnelle d'un athlète à
+partir d'une simple vidéo monoculaire non calibrée, sans marqueur ni système
+multicaméras.
+
+L'architecture proposée repose sur quatre modules de l'état de l'art : segmentation
+d'instances (SAM3), estimation monoculaire de profondeur (MoGe-2), complétion amodale
+des occlusions par modèle de diffusion (TACO) et reconstruction de la pose en 3D (SAM 3D Body).
+La contribution centrale réside dans la spécialisation du module de complétion amodale à
+la force athlétique et dans l'unification de ces composants au sein d'un pipeline complet.
+À cette fin, un jeu de données dédié a été constitué à partir de six sujets, avec génération
+synthétique d'occlusions représentatives (disques, racks) et augmentation des données,
+puis exploité pour un fine-tuning de TACO par adaptation de faible rang (LoRA).
+
+L'évaluation, conduite sur un sujet absent de l'entraînement, montre une amélioration
+moyenne du LPIPS (\textit{Learned Perceptual Image Patch Similarity}) de 35,0\,\% par rapport 
+au modèle de base (significativité confirmée par un test de Wilcoxon), le gain étant le plus marqué 
+au développé couché, mouvement le plus fortement occulté. Mesuré par le MPJPE 
+(\textit{Mean Per-Joint Position Error}), le fine-tuning améliore nettement la reconstruction 3D par 
+rapport au modèle de base, avec un gain pouvant atteindre $40,6$\,\% au soulevé de terre. Par rapport à l'image occluse brute, 
+la complétion amodale n'apporte toutefois un gain intéressant qu'au développé
+couché et peut introduire des artefacts pénalisant l'estimation de la pose au squat et au soulevé de terre.
+Une interface web de visualisation complète le travail en calculant automatiquement les indicateurs
+biomécaniques pertinents (profondeur de squat, verrouillage articulaire, inclinaison du
+buste, asymétrie des hanches). Les principales limites tiennent à la taille restreinte du
+jeu de données de tests et à l'usage d'occlusions synthétiques, qui appellent une validation sur un
+corpus réel élargi.
+
+Les principales limites tiennent à la taille restreinte du jeu de test (un seul sujet en évaluation), 
+à l'usage d'occlusions synthétiques plutôt que d'occlusions réelles, et aux artefacts que la complétion 
+amodale peut introduire sur certains mouvements. Plusieurs pistes d'amélioration en découlent : valider le pipeline sur 
+un corpus réel et multi-sujets, affiner la complétion pour limiter ces artefacts résiduels, et exploiter 
+la cohérence temporelle entre images successives, actuellement absente, afin de stabiliser la reconstruction 3D.
+
+\vspace{1em}
+
+\noindent\textbf{Mots-clés :} reconstruction 3D ; force athlétique ; vidéo monoculaire ;
+complétion amodale ; fine-tuning LoRA ; estimation de pose humaine.
+
+\end{document}

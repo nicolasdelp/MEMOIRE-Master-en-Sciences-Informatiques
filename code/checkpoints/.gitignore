@@ -1,0 +1,11 @@
+moge/.cache
+moge/model.pt
+sam_3d_body/.cache
+sam_3d_body/mhr_model.pt
+sam_3d_body/model.ckpt
+sam3/.cache
+sam3/sam3.pt
+sam3/*.txt.gz
+taco/.cache
+taco/last.ckpt
+taco/lora.ckpt

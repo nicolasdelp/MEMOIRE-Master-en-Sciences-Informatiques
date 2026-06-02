@@ -1,0 +1,111 @@
+_wandb:
+    value:
+        cli_version: 0.23.1
+        e:
+            b2mpd3rdjaf8df1ohyzupnrtdepq05l2:
+                args:
+                    - --base=configs/train_vac.yaml
+                    - --name=TrackMyLift-AI
+                    - --projectname
+                    - TrackMyLift-AI
+                    - --seed=1234
+                    - --num_nodes=1
+                    - --wandb=1
+                    - --no-test
+                    - "true"
+                    - data.params.frame_width=384
+                    - data.params.frame_height=384
+                    - data.params.batch_size=1
+                    - data.params.num_workers=4
+                    - data.params.data_gpu=0
+                    - lightning.callbacks.image_logger.params.batch_frequency=200
+                    - lightning.trainer.devices=0,1
+                    - lightning.trainer.accumulate_grad_batches=2
+                codePath: code/models/taco/main.py
+                codePathLocal: main.py
+                cpu_count: 24
+                cpu_count_logical: 48
+                cudaVersion: "12.2"
+                disk:
+                    /:
+                        total: "1006450962432"
+                        used: "478097506304"
+                email: j8d9f6ftbb@privaterelay.appleid.com
+                executable: /home/nicolasdelplanque/miniconda3/envs/taco/bin/python3.10
+                git:
+                    commit: 364c6e057c2a4fcbab3bc07505a41f7ec542b691
+                    remote: https://github.com/nicolasdelp/TrackMyLift-AI.git
+                gpu: NVIDIA RTX A5000
+                gpu_count: 2
+                gpu_nvidia:
+                    - architecture: Ampere
+                      cudaCores: 8192
+                      memoryTotal: "25757220864"
+                      name: NVIDIA RTX A5000
+                      uuid: GPU-1ef3faa8-e755-6db3-f2be-68728639fc9a
+                    - architecture: Ampere
+                      cudaCores: 8192
+                      memoryTotal: "25757220864"
+                      name: NVIDIA RTX A5000
+                      uuid: GPU-e563dc8e-825d-53e6-0ecd-fe90303cb972
+                host: pc-ThinkStation-P620
+                memory:
+                    total: "134865375232"
+                os: Linux-6.5.0-18-generic-x86_64-with-glibc2.35
+                program: /media/pc/hdd2/data-students/nicolasdelplanque/TrackMyLift-AI/code/models/taco/main.py
+                python: CPython 3.10.20
+                root: ../logs/2026-05-20T00-49-56_TrackMyLift-AI
+                startedAt: "2026-05-19T22:51:50.314358Z"
+                writerId: b2mpd3rdjaf8df1ohyzupnrtdepq05l2
+        m:
+            - "1": trainer/global_step
+              "6":
+                - 3
+              "7": []
+            - "2": '*'
+              "5": 1
+              "6":
+                - 1
+              "7": []
+        python_version: 3.10.20
+        t:
+            "1":
+                - 1
+                - 5
+                - 9
+                - 11
+                - 41
+                - 49
+                - 53
+                - 63
+                - 71
+                - 79
+                - 98
+                - 103
+                - 105
+            "2":
+                - 1
+                - 5
+                - 9
+                - 11
+                - 41
+                - 49
+                - 53
+                - 63
+                - 71
+                - 79
+                - 98
+                - 103
+                - 105
+            "3":
+                - 2
+                - 7
+                - 13
+                - 14
+                - 15
+                - 66
+            "4": 3.10.20
+            "5": 0.23.1
+            "6": 5.7.0
+            "12": 0.23.1
+            "13": linux-x86_64

@@ -1,0 +1,324 @@
+[workspace]
+name = "TrackMyLift-AI"
+version = "1.0.0"
+authors = ["Nicolas Delplanque"]
+channels = ["conda-forge", "pytorch", "nvidia"]
+platforms = ["linux-64"]
+
+[system-requirements]
+cuda = "12.2"
+
+[environments]
+env-scripts = ["scripts"]
+env-sam3 = ["sam3"]
+env-moge = ["moge"]
+env-taco = ["taco"]
+env-sam-3d-body = ["sam-3d-body"]
+
+# ----------------------------------
+# Scripts
+# ----------------------------------
+[feature.scripts.dependencies]
+python = "3.12.*"
+
+[feature.scripts.pypi-dependencies]
+opencv-python = "==4.10.0.84"
+tqdm = "*"
+numpy = ">=1.26,<2"
+pillow = "==10.4.0"
+scipy = "*"
+pandas = "*"
+pycocotools = "*"
+matplotlib = "*"
+
+# ----------------------------------
+# SAM 3
+# ----------------------------------
+[feature.sam3.dependencies]
+python = "3.12.*"
+
+[feature.sam3.pypi-dependencies]
+cuda-toolkit = "==12.6.0"
+torch = "==2.10.0"
+torchvision = "*"
+timm = ">=1.0.17"
+numpy = ">=1.26,<2"
+tqdm = "*"
+ftfy = "==6.1.1"
+regex = "*"
+iopath = ">=0.1.10"
+typing_extensions = "*"
+huggingface_hub = "==0.25.2"
+einops = "*"
+decord = "*"
+pycocotools = "*"
+psutil = "*"
+opencv-python = "*"
+matplotlib = "*"
+pandas = "*"
+scikit-image = "*"
+scikit-learn = "*"
+
+# ----------------------------------
+# MoGe
+# ----------------------------------
+[feature.moge.dependencies]
+python = "3.12.*"
+
+[feature.moge.pypi-dependencies]
+cuda-toolkit = "==12.6.0"
+torch = "==2.10.0"
+torchvision = "*"
+gradio = "==2.8.13"
+click = "==8.1.7"
+opencv-python = "==4.10.0.84"
+scipy = "==1.14.1"
+matplotlib = "==3.9.2"
+trimesh = "==4.5.1"
+pillow = "==10.4.0"
+huggingface_hub = "==0.25.2"
+utils3d = { git = "https://github.com/EasternJournalist/utils3d.git", rev = "3fab839f0be9931dac7c8488eb0e1600c236e183" }
+pipeline = { git = "https://github.com/EasternJournalist/pipeline.git", rev = "866f059d2a05cde05e4a52211ec5051fd5f276d6" }
+
+# ----------------------------------
+# Taco
+# ----------------------------------
+[feature.taco.dependencies]
+python = "3.10.*"
+
+[feature.taco.pypi-dependencies]
+demos = "*"
+diffusers = "*"
+einops = "*"
+fire = "*"
+fitz = "*"
+fsspec = "*"
+gradio = "*"
+invisible_watermark = "*"
+joblib = "*"
+kornia = "*"
+lovely_numpy = "*"
+lovely_tensors = "*"
+lpips = "*"
+matplotlib = "*"
+mediapy = "*"
+natsort = "*"
+numpy = "*"
+omegaconf = "*"
+open_clip_torch = "*"
+opencv_python = "*"
+pandas = "*"
+packaging = "*"
+peft = "==0.7.1"
+bitsandbytes = "*"
+Pillow = "*"
+plotly = "*"
+protobuf = "*"
+pudb = "*"
+pyquaternion = "*"
+pytorchvideo = "*"
+pyspng = "*"
+pytest = "*"
+pytorch_fid = "*"
+pytorch_lightning = "*"
+Requests = "*"
+rich = "*"
+safetensors = "*"
+scikit-image = "*"
+scikit_learn = "*"
+scipy = "*"
+seaborn = "*"
+streamlit = "*"
+torch = "==2.5.1"
+torchdata = "*"
+torchvision = "==0.20.1"
+torchaudio = "==2.5.1"
+tqdm = "*"
+transformers = "*"
+wandb = "*"
+webdataset = "*"
+xformers = "*"
+imageio = { version = "*", extras = ["ffmpeg"] }
+
+# ----------------------------------
+# SAM 3D Body
+# ----------------------------------
+[feature.sam-3d-body.dependencies]
+python = "3.12.*"
+
+[feature.sam-3d-body.pypi-dependencies]
+cuda-toolkit = "==12.6.0"
+torch = "==2.10.0"
+torchvision = "*"
+pytorch-lightning = "*"
+pyrender = "*"
+opencv-python = "*"
+yacs = "*"
+scikit-image = "*"
+einops = "*"
+timm = "*"
+dill = "*"
+pandas = "*"
+rich = "*"
+hydra-core = "*"
+hydra-submitit-launcher = "*"
+hydra-colorlog = "*"
+pyrootutils = "*"
+webdataset = "*"
+chump = "*"
+networkx = "==3.2.1"
+roma = "*"
+joblib = "*"
+seaborn = "*"
+wandb = "*"
+appdirs = "*"
+appnope = "*"
+ffmpeg = "*"
+cython = "*"
+jsonlines = "*"
+pytest = "*"
+numpy = "*"
+# xtcocotools = "*"
+loguru = "*"
+optree = "*"
+fvcore = "*"
+black = "*"
+pycocotools = "*"
+tensorboard = "*"
+huggingface_hub = "*"
+detectron2 = { git = "https://github.com/facebookresearch/detectron2.git", rev = "a1ce2f9" }
+moge = { git = "https://github.com/microsoft/MoGe.git" }
+
+[feature.sam-3d-body.pypi-options]
+no-build-isolation = ["detectron2"]
+
+
+# ----------------------------------------------------------------------------------------
+# Tasks
+# ----------------------------------------------------------------------------------------
+
+[feature.scripts.tasks]
+data-analysis = { cmd = "python code/scripts/data-analysis.py {{ path }}", args = [
+    { arg = "path", default = "/media/pc/hdd2/data-students/nicolasdelplanque/TrackMyLift-AI/data/imu/DELPLANQUE_Nicolas/2025-10-20/20251020175724_SQUAT.txt" },
+] }
+extract-frames = { cmd = "python code/scripts/extract-frames.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+extract-frames-dataset = { cmd = "bash -c 'python code/scripts/extract-frames.py -video_filename {{ video }} --augment --seed $RANDOM'", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+depth-filtering = { cmd = "python code/scripts/depth-filtering.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+subfolder-depth-filtering = { cmd = "python code/scripts/subfolder-depth-filtering.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+remove-background = { cmd = "python code/scripts/remove-background.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+subfolder-remove-background = { cmd = "python code/scripts/subfolder-remove-background.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+subfolder-artificial-occlusion = { cmd = "python code/scripts/subfolder-artificial-occlusion.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+prepare-taco-dataset = { cmd = "python code/scripts/prepare-taco-dataset.py --input $INPUT --output $OUTPUT --train-frac $RATIO", env = { INPUT = "/media/pc/hdd2/data-students/nicolasdelplanque/TrackMyLift-AI/data/outputs", OUTPUT = "/media/pc/hdd2/data-students/nicolasdelplanque/TrackMyLift-AI/data/datasets/custom", RATIO = "0.7" } }
+
+[feature.sam3.tasks]
+sam3 = { cmd = "python code/models/sam3/run_inference.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+], env = { PYTHONPATH = "code" } }
+sam3-subfolder = { cmd = "python code/models/sam3/run_subfolder_inference.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+], env = { PYTHONPATH = "code" } }
+sam3-subfolder-occluded = { cmd = "python code/models/sam3/run_subfolder_inference.py -video_filename {{ video }} -occluded True", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+], env = { PYTHONPATH = "code" } }
+
+[feature.moge.tasks]
+moge = { cmd = "python code/models/moge/run_inference.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+moge-visualisation = { cmd = "python code/models/moge/run_inference.py -video_filename {{ video }} -visualisation True", args = [
+    { arg = "video", default = "IMG_0001.MOV" },
+] }
+moge-subfolder = { cmd = "python code/models/moge/run_subfolder_inference.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+], env = { PYTHONPATH = "code" } }
+moge-subfolder-visualisation = { cmd = "python code/models/moge/run_subfolder_inference.py -video_filename {{ video }} -visualisation True", args = [
+    { arg = "video", default = "IMG_0001.MOV" },
+] }
+
+[feature.taco.tasks]
+taco = { cmd = "python code/models/taco/run_inference.py -video_filename {{ video }} --model {{ model }}", args = [
+    { arg = "video", default = "IMG_0098.mov" },
+    { arg = "model", default = "lora" },
+] }
+taco-baseline = { cmd = "python code/models/taco/run_subfolder_inference.py -video_filename {{ video }} --model {{ model }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+    { arg = "model", default = "baseline" },
+] }
+taco-lora = { cmd = "python code/models/taco/run_subfolder_inference.py -video_filename {{ video }} --model {{ model }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+    { arg = "model", default = "lora" },
+] }
+
+[feature.sam-3d-body.tasks]
+sam-3d-body = { cmd = "python code/models/sam_3d_body/run_inference.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+occulted-sam-3d-body = { cmd = "python code/models/sam_3d_body/run_occulted_inference.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+taco-sam-3d-body = { cmd = "python code/models/sam_3d_body/run_taco_inference.py -video_filename {{ video }}", args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+
+[tasks]
+create-dataset-pipeline = { depends-on = [
+    { task = "extract-frames-dataset", environment = "env-scripts", args = [
+        "{{ video }}",
+    ] },
+    { task = "sam3-subfolder", environment = "env-sam3", args = [
+        "{{ video }}",
+    ] },
+    { task = "moge-subfolder", environment = "env-moge", args = [
+        "{{ video }}",
+    ] },
+    { task = "subfolder-depth-filtering", environment = "env-scripts", args = [
+        "{{ video }}",
+    ] },
+    { task = "subfolder-remove-background", environment = "env-scripts", args = [
+        "{{ video }}",
+    ] },
+    { task = "subfolder-artificial-occlusion", environment = "env-scripts", args = [
+        "{{ video }}",
+    ] },
+    { task = "sam3-subfolder-occluded", environment = "env-sam3", args = [
+        "{{ video }}",
+    ] },
+], args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }
+main-pipeline = { depends-on = [
+    { task = "extract-frames", environment = "env-scripts", args = [
+        "{{ video }}",
+    ] },
+    { task = "sam3", environment = "env-sam3", args = [
+        "{{ video }}",
+    ] },
+    { task = "moge", environment = "env-moge", args = [
+        "{{ video }}",
+    ] },
+    { task = "depth-filtering", environment = "env-scripts", args = [
+        "{{ video }}",
+    ] },
+    { task = "remove-background", environment = "env-scripts", args = [
+        "{{ video }}",
+    ] },
+    { task = "taco", environment = "env-taco", args = [
+        "{{ video }}",
+    ] },
+], args = [
+    { arg = "video", default = "IMG_0001.mov" },
+] }

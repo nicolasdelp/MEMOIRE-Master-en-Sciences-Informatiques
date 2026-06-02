@@ -1,0 +1,40 @@
+{
+  "models": {
+    "sam3": {
+      "version": "1.0.0",
+      "checkpoint": "sam3.pt",
+      "source": "https://huggingface.co/facebook/sam3",
+      "sha256": "9999e2341ceef5e136daa386eecb55cb414446a00ac2b55eb2dfd2f7c3cf8c9e"
+    },
+    "moge2": {
+      "version": "1.0.0",
+      "checkpoint": "model.pt",
+      "source": "https://huggingface.co/Ruicheng/moge-2-vitl",
+      "sha256": "3eefd4abb2102f38f12b2d1992e5ff15e4923e5431c67dd494afe157e0111cd5"
+    },
+    "taco": {
+      "version": "1.0.0",
+      "checkpoint": "last.ckpt",
+      "source": "https://huggingface.co/datasets/JasonAplp/TACO/tree/main/checkpoints",
+      "sha256": "cbb4e55a0c4b4f9cbc89fcedcbc843feed873b3605624316c684c9bf63818a63"
+    },
+    "taco_lora": {
+      "version": "1.0.0",
+      "checkpoint": "lora.ckpt",
+      "source": "https://huggingface.co/Nicolasdelp/TACO-LoRA-Powerlifting",
+      "sha256": "2b952e6091184a6f52741158757126d63b6066b0d78fc96afe3c007e33b5699d"
+    },
+    "sam3dbody": {
+      "version": "1.0.0",
+      "checkpoint": "model.ckpt",
+      "source": "https://huggingface.co/facebook/sam-3d-body-vith",
+      "sha256": "3b1cb897f4bbd977bf81cbb0b30780a9582681ac642ee112865790ceb4d66056"
+    },
+    "mhr": {
+      "version": "1.0.0",
+      "checkpoint": "mhr_model.pt",
+      "source": "https://github.com/facebookresearch/MHR/releases/download/v1.0.0/assets.zip",
+      "sha256": "352e271a6c42729c68554ceaea0c955e866970160c31e35506d782dc0f7377bc"
+    }
+  }
+}
